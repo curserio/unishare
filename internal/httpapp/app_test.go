@@ -125,28 +125,28 @@ func TestUsersAreIsolated(t *testing.T) {
 		t.Fatal(err)
 	}
 	app := New(config.Config{
-		Users:          []config.User{{ID: "main", Token: "main-token"}, {ID: "mom", Token: "mom-token"}},
+		Users:          []config.User{{ID: "main", Token: "main-token"}, {ID: "second", Token: "second-token"}},
 		StaticDir:      "static",
 		MaxUploadBytes: 1 << 20,
 	}, itemStore)
 	handler := app.Handler()
 
 	mainCookie := loginCookie(t, handler, "main-token")
-	momCookie := loginCookie(t, handler, "mom-token")
+	secondCookie := loginCookie(t, handler, "second-token")
 
 	createItem(t, handler, mainCookie, "main item")
-	createItem(t, handler, momCookie, "mom item")
+	createItem(t, handler, secondCookie, "second item")
 
 	mainItems := listItems(t, handler, mainCookie)
-	momItems := listItems(t, handler, momCookie)
+	secondItems := listItems(t, handler, secondCookie)
 	if len(mainItems) != 1 || mainItems[0].Text != "main item" {
 		t.Fatalf("unexpected main items: %+v", mainItems)
 	}
-	if len(momItems) != 1 || momItems[0].Text != "mom item" {
-		t.Fatalf("unexpected mom items: %+v", momItems)
+	if len(secondItems) != 1 || secondItems[0].Text != "second item" {
+		t.Fatalf("unexpected second items: %+v", secondItems)
 	}
 
-	deleteReq := httptest.NewRequest(http.MethodDelete, "/api/items/"+momItems[0].ID, nil)
+	deleteReq := httptest.NewRequest(http.MethodDelete, "/api/items/"+secondItems[0].ID, nil)
 	deleteReq.AddCookie(mainCookie)
 	deleteRec := httptest.NewRecorder()
 	handler.ServeHTTP(deleteRec, deleteReq)

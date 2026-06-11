@@ -7,7 +7,7 @@ func TestLoadDefaultsAndEnv(t *testing.T) {
 	t.Setenv("UNISHARE_DATA_DIR", "/tmp/unishare")
 	t.Setenv("UNISHARE_STATIC_DIR", "public")
 	t.Setenv("UNISHARE_PUBLIC_BASE_URL", "https://share.example.com/")
-	t.Setenv("UNISHARE_USERS", "main:secret,mom:another-secret")
+	t.Setenv("UNISHARE_USERS", "main:secret,second:another-secret")
 	t.Setenv("UNISHARE_COOKIE_SECURE", "true")
 	t.Setenv("UNISHARE_MAX_UPLOAD_MB", "12")
 	t.Setenv("UNISHARE_BASE_PATH", "/unishare/")
