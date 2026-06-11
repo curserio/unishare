@@ -25,7 +25,7 @@ cp .env.example .env
 Edit at least these values:
 
 ```dotenv
-UNISHARE_USERS=main:a-long-secret-code,mom:another-long-secret-code
+UNISHARE_USERS=user1:a-long-secret-code,user2:another-long-secret-code
 UNISHARE_PUBLIC_BASE_URL=https://share.example.com
 GHCR_OWNER=OWNER
 ```
@@ -95,7 +95,7 @@ Language and theme are local settings. Each browser, profile, or Private Space c
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `UNISHARE_USERS` | required | Comma-separated named tokens, for example `main:token1,mom:token2`. |
+| `UNISHARE_USERS` | required | Comma-separated named tokens, for example `user1:token1,user2:token2`. |
 | `UNISHARE_PUBLIC_BASE_URL` | empty | Public HTTPS origin, used to build file links. Do not include `UNISHARE_BASE_PATH` here. |
 | `UNISHARE_BASE_PATH` | empty | Optional path prefix, for example `/unishare`. |
 | `UNISHARE_MAX_UPLOAD_MB` | `50` | Per-file upload limit in MB. |
@@ -112,7 +112,7 @@ Language and theme are local settings. Each browser, profile, or Private Space c
 Unishare does not have registration or user management. Instead, the server owner defines named tokens:
 
 ```dotenv
-UNISHARE_USERS=main:long-random-token-1,mom:long-random-token-2
+UNISHARE_USERS=user1:long-random-token-1,user2:long-random-token-2
 ```
 
 Each name gets a separate private buffer. A session created with one token cannot list, delete, download, or share files from another token. Data is stored under:

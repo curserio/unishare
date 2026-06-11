@@ -24,7 +24,7 @@ func TestFileStoreAddListDelete(t *testing.T) {
 		t.Fatalf("unexpected item: %+v", items[0])
 	}
 
-	if otherItems, err := store.List("mom"); err != nil || len(otherItems) != 0 {
+	if otherItems, err := store.List("second"); err != nil || len(otherItems) != 0 {
 		t.Fatalf("unexpected other user items: %+v err=%v", otherItems, err)
 	}
 
