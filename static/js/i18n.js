@@ -22,6 +22,8 @@ const dictionaries = {
     signIn: "Sign in",
     textOrLink: "Link or text",
     textPlaceholder: "Paste anything you want to pass along",
+    paste: "Paste",
+    pasteFromClipboard: "Paste from clipboard",
     files: "Files",
     addToBuffer: "Add to buffer",
     latest: "Latest",
@@ -72,6 +74,8 @@ const dictionaries = {
     signIn: "Войти",
     textOrLink: "Ссылка или текст",
     textPlaceholder: "Вставьте то, что нужно передать дальше",
+    paste: "Вставить",
+    pasteFromClipboard: "Вставить из буфера",
     files: "Файлы",
     addToBuffer: "Положить в буфер",
     latest: "Последнее",
@@ -156,6 +160,9 @@ function renderStaticText(root, language) {
   }
   for (const element of root.querySelectorAll("[data-i18n-aria-label]")) {
     element.setAttribute("aria-label", translate(language, element.dataset.i18nAriaLabel));
+  }
+  for (const element of root.querySelectorAll("[data-i18n-title]")) {
+    element.setAttribute("title", translate(language, element.dataset.i18nTitle));
   }
   document.title = translate(language, "appTitle");
 }

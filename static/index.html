@@ -69,7 +69,14 @@
         <form id="shareForm" class="composer">
           <div class="composer-main">
             <label>
-              <span data-i18n="textOrLink">Link or text</span>
+              <div class="label-row">
+                <span data-i18n="textOrLink">Link or text</span>
+                <button id="pasteButton" class="ghost-button icon-button hidden" type="button" data-i18n-aria-label="pasteFromClipboard" data-i18n-title="pasteFromClipboard">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                    <path d="M8 3.5h5a2 2 0 0 1 2 2V7h1.5A2.5 2.5 0 0 1 19 9.5v10A2.5 2.5 0 0 1 16.5 22h-8A2.5 2.5 0 0 1 6 19.5v-10A2.5 2.5 0 0 1 8.5 7H10V5.5a2 2 0 0 1 2-2Zm0 5A1.5 1.5 0 0 0 6.5 10v9.5A1.5 1.5 0 0 0 8 21h8.5a1.5 1.5 0 0 0 1.5-1.5V10A1.5 1.5 0 0 0 16.5 8.5H15V10h1.5a.5.5 0 0 1 0 1H8.5a.5.5 0 0 1 0-1H10V8.5Zm2-3V7h4V5.5a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1Zm1 7.5a.5.5 0 0 1 .5.5v2.09l.74-.74a.5.5 0 1 1 .71.71l-1.63 1.64a.5.5 0 0 1-.7 0l-1.64-1.64a.5.5 0 0 1 .71-.71l.74.74V16a.5.5 0 0 1 .5-.5Z"/>
+                  </svg>
+                </button>
+              </div>
               <textarea id="textInput" name="text" rows="3" placeholder="Paste anything you want to pass along" data-i18n-placeholder="textPlaceholder"></textarea>
             </label>
             <label class="file-input">

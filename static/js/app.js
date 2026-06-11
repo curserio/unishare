@@ -7,6 +7,7 @@ const loginView = document.querySelector("#loginView");
 const appView = document.querySelector("#appView");
 const loginForm = document.querySelector("#loginForm");
 const shareForm = document.querySelector("#shareForm");
+const pasteButton = document.querySelector("#pasteButton");
 const itemsEl = document.querySelector("#items");
 const itemsCount = document.querySelector("#itemsCount");
 const statusEl = document.querySelector("#status");
@@ -16,6 +17,7 @@ const settingsButton = document.querySelector("#settingsButton");
 const settingsPanel = document.querySelector("#settingsPanel");
 const themeInputs = [...document.querySelectorAll("input[name='theme']")];
 const languageInputs = [...document.querySelectorAll("input[name='language']")];
+const textInput = document.querySelector("#textInput");
 
 const i18n = initI18n();
 const theme = initTheme(syncThemeInputs);
@@ -99,6 +101,21 @@ shareForm.addEventListener("submit", async (event) => {
   }
 });
 
+pasteButton.addEventListener("click", async () => {
+  const text = await readClipboardText();
+  if (!text) {
+    await updatePasteButton();
+    return;
+  }
+  insertClipboardText(text);
+});
+
+textInput.addEventListener("focus", () => updatePasteButton());
+textInput.addEventListener("input", () => updatePasteButton());
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) updatePasteButton();
+});
+
 boot();
 
 async function boot() {
@@ -127,6 +144,7 @@ async function showApp() {
   loginView.classList.add("hidden");
   appView.classList.remove("hidden");
   logoutButton.classList.remove("hidden");
+  await updatePasteButton();
   await loadItems();
 }
 
@@ -200,4 +218,34 @@ function syncThemeInputs(value) {
 function closeSettings() {
   settingsPanel.classList.add("hidden");
   settingsButton.setAttribute("aria-expanded", "false");
+}
+
+async function updatePasteButton() {
+  if (appView.classList.contains("hidden")) {
+    pasteButton.classList.add("hidden");
+    return;
+  }
+  const text = await readClipboardText();
+  pasteButton.classList.toggle("hidden", !text);
+}
+
+async function readClipboardText() {
+  if (!navigator.clipboard?.readText) return "";
+  try {
+    return (await navigator.clipboard.readText()).trim();
+  } catch {
+    return "";
+  }
+}
+
+function insertClipboardText(text) {
+  const start = textInput.selectionStart ?? textInput.value.length;
+  const end = textInput.selectionEnd ?? textInput.value.length;
+  const separator = textInput.value && start === end ? (textInput.value.endsWith("\n") ? "" : "\n") : "";
+  const nextValue = textInput.value.slice(0, start) + separator + text + textInput.value.slice(end);
+  textInput.value = nextValue;
+  const cursor = start + separator.length + text.length;
+  textInput.setSelectionRange(cursor, cursor);
+  textInput.focus();
+  updatePasteButton();
 }
