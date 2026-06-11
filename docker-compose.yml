@@ -1,0 +1,27 @@
+services:
+  unishare:
+    image: ghcr.io/${GHCR_OWNER:-OWNER}/unishare:${UNISHARE_IMAGE_TAG:-latest}
+    container_name: unishare
+    restart: unless-stopped
+    ports:
+      - "${UNISHARE_HTTP_PORT:-8080}:8080"
+    environment:
+      UNISHARE_USERS: "${UNISHARE_USERS:?UNISHARE_USERS is required}"
+      UNISHARE_PUBLIC_BASE_URL: "${UNISHARE_PUBLIC_BASE_URL:-}"
+      UNISHARE_BASE_PATH: "${UNISHARE_BASE_PATH:-}"
+      UNISHARE_MAX_UPLOAD_MB: "${UNISHARE_MAX_UPLOAD_MB:-50}"
+      UNISHARE_ADDR: ":8080"
+      UNISHARE_DATA_DIR: "/data"
+      UNISHARE_STATIC_DIR: "/app/static"
+      UNISHARE_COOKIE_SECURE: "${UNISHARE_COOKIE_SECURE:-auto}"
+    volumes:
+      - unishare-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  unishare-data:

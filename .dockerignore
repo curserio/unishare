@@ -1,0 +1,11 @@
+.git
+.agents
+.codex
+.github
+.env
+bin
+unishare
+data
+tmp
+*.tmp
+static/icons/icon-source.png

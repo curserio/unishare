@@ -1,0 +1,12 @@
+/.env
+/bin/
+/data/
+/tmp/
+/unishare
+*.tmp
+
+.DS_Store
+Thumbs.db
+
+.idea/
+.vscode/

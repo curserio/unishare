@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7f4">
+    <title>Unishare</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <h1>Unishare</h1>
+          <p data-i18n="brandTagline">Personal dropbox for links, text, and files</p>
+        </div>
+        <div class="top-actions">
+          <button id="settingsButton" class="menu-button" type="button" aria-expanded="false" aria-controls="settingsPanel" aria-label="Menu" data-i18n-aria-label="menu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+          <section id="settingsPanel" class="settings-panel hidden">
+            <div class="setting-row">
+              <div>
+                <h2 data-i18n="languageTitle">Language</h2>
+                <p data-i18n="languageDescription">Use your system language by default.</p>
+              </div>
+              <fieldset class="segmented-picker" aria-label="Language" data-i18n-aria-label="languageTitle">
+                <label><input type="radio" name="language" value="system"><span data-i18n="optionSystem">System</span></label>
+                <label><input type="radio" name="language" value="ru"><span>Русский</span></label>
+                <label><input type="radio" name="language" value="en"><span>English</span></label>
+              </fieldset>
+            </div>
+            <div class="setting-row">
+              <div>
+                <h2 data-i18n="appearanceTitle">Appearance</h2>
+                <p data-i18n="appearanceDescription">Unishare follows your system theme by default.</p>
+              </div>
+              <fieldset class="segmented-picker" aria-label="Theme" data-i18n-aria-label="themeTitle">
+                <label><input type="radio" name="theme" value="system"><span data-i18n="optionSystem">System</span></label>
+                <label><input type="radio" name="theme" value="light"><span data-i18n="optionLight">Light</span></label>
+                <label><input type="radio" name="theme" value="dark"><span data-i18n="optionDark">Dark</span></label>
+              </fieldset>
+            </div>
+            <button id="logoutButton" class="menu-action danger-button hidden" type="button" data-i18n="logout">Log out</button>
+          </section>
+        </div>
+      </header>
+
+      <section id="loginView" class="auth-card hidden">
+        <div class="section-title">
+          <h2 data-i18n="loginTitle">Sign in</h2>
+          <p data-i18n="loginDescription">Enter the access code once on every device, profile, or space.</p>
+        </div>
+        <form id="loginForm" class="stack">
+          <label>
+            <span data-i18n="accessCode">Access code</span>
+            <input id="tokenInput" name="token" type="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit" data-i18n="signIn">Sign in</button>
+        </form>
+      </section>
+
+      <section id="appView" class="hidden">
+        <form id="shareForm" class="composer">
+          <div class="composer-main">
+            <label>
+              <span data-i18n="textOrLink">Link or text</span>
+              <textarea id="textInput" name="text" rows="3" placeholder="Paste anything you want to pass along" data-i18n-placeholder="textPlaceholder"></textarea>
+            </label>
+            <label class="file-input">
+              <span data-i18n="files">Files</span>
+              <input id="fileInput" name="files" type="file" multiple>
+            </label>
+          </div>
+          <button class="primary-button" type="submit" data-i18n="addToBuffer">Add to buffer</button>
+        </form>
+
+        <section class="list-head" aria-live="polite">
+          <div class="section-title">
+            <h2 data-i18n="latest">Latest</h2>
+            <p id="itemsCount" data-i18n="loading">Loading</p>
+          </div>
+          <button id="refreshButton" class="ghost-button" type="button" data-i18n="refresh">Refresh</button>
+        </section>
+        <div id="items" class="items"></div>
+      </section>
+
+      <p id="status" class="status" role="status"></p>
+    </main>
+    <script src="config.js"></script>
+    <script src="js/app.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+services:
+  unishare:
+    build: .
+    image: unishare:local
