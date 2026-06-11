@@ -296,6 +296,14 @@ label {
   font-weight: 700;
 }
 
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+}
+
 .file-input input {
   padding: 10px;
 }
@@ -315,6 +323,20 @@ label {
   border: 1px solid var(--line);
   color: var(--ink);
   padding: 0 14px;
+}
+
+.icon-button {
+  display: inline-grid;
+  place-content: center;
+  width: 36px;
+  min-height: 36px;
+  padding: 0;
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
 }
 
 .danger-button {
@@ -448,6 +470,10 @@ label {
 
   .primary-button {
     width: 100%;
+  }
+
+  .label-row {
+    align-items: flex-start;
   }
 }
 
