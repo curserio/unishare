@@ -253,35 +253,51 @@ func (a *App) authenticated(r *http.Request) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-	userID, signature, ok := strings.Cut(cookie.Value, ".")
-	if !ok || userID == "" || signature == "" {
+	userID, signature, ok := parseSessionValue(cookie.Value)
+	if !ok {
 		return "", false
 	}
-	if sameSecret(cookie.Value, a.sessionValue(userID)) {
+	expectedSignature, ok := a.sessionSignature(userID)
+	if !ok {
+		return "", false
+	}
+	if sameSecret(signature, expectedSignature) {
 		return userID, true
 	}
 	return "", false
 }
 
 func (a *App) sessionValue(userID string) string {
-	token, ok := a.tokenForUserID(userID)
+	signature, ok := a.sessionSignature(userID)
 	if !ok {
 		return ""
 	}
+	return userID + "." + signature
+}
+
+func (a *App) sessionSignature(userID string) (string, bool) {
+	token, ok := a.tokenForUserID(userID)
+	if !ok {
+		return "", false
+	}
 	sum := sha256.Sum256([]byte("unishare:" + userID + ":" + token))
-	return userID + "." + hex.EncodeToString(sum[:])
+	return hex.EncodeToString(sum[:]), true
 }
 
 func (a *App) userIDForToken(token string) (string, bool) {
 	tokenSum := sha256.Sum256([]byte(token))
-	matchID := ""
-	for _, user := range a.cfg.Users {
+	matchIndex := 0
+	found := 0
+	for i, user := range a.cfg.Users {
 		userSum := sha256.Sum256([]byte(user.Token))
-		if subtle.ConstantTimeCompare(tokenSum[:], userSum[:]) == 1 {
-			matchID = user.ID
-		}
+		matches := subtle.ConstantTimeCompare(tokenSum[:], userSum[:])
+		matchIndex = subtle.ConstantTimeSelect(matches, i, matchIndex)
+		found = subtle.ConstantTimeSelect(matches, 1, found)
 	}
-	return matchID, matchID != ""
+	if found != 1 {
+		return "", false
+	}
+	return a.cfg.Users[matchIndex].ID, true
 }
 
 func (a *App) tokenForUserID(userID string) (string, bool) {
@@ -358,7 +374,17 @@ func isHTTPS(r *http.Request) bool {
 }
 
 func sameSecret(left, right string) bool {
-	return subtle.ConstantTimeCompare([]byte(left), []byte(right)) == 1
+	leftSum := sha256.Sum256([]byte(left))
+	rightSum := sha256.Sum256([]byte(right))
+	return subtle.ConstantTimeCompare(leftSum[:], rightSum[:]) == 1
+}
+
+func parseSessionValue(value string) (string, string, bool) {
+	userID, signature, ok := strings.Cut(value, ".")
+	if !ok || userID == "" || signature == "" || strings.Contains(signature, ".") {
+		return "", "", false
+	}
+	return userID, signature, true
 }
 
 func firstNonEmpty(values ...string) string {

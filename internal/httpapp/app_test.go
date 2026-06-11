@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/curserio/unishare/internal/config"
@@ -152,6 +153,60 @@ func TestUsersAreIsolated(t *testing.T) {
 	handler.ServeHTTP(deleteRec, deleteReq)
 	if deleteRec.Code != http.StatusNotFound {
 		t.Fatalf("expected cross-user delete to fail, got %d", deleteRec.Code)
+	}
+}
+
+func TestTamperedSessionUserIDIsRejected(t *testing.T) {
+	itemStore, err := store.NewFileStore(t.TempDir(), 1<<20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app := New(config.Config{
+		Users:          []config.User{{ID: "main", Token: "main-token"}, {ID: "second", Token: "second-token"}},
+		StaticDir:      "static",
+		MaxUploadBytes: 1 << 20,
+	}, itemStore)
+	handler := app.Handler()
+
+	cookie := loginCookie(t, handler, "main-token")
+	_, signature, ok := strings.Cut(cookie.Value, ".")
+	if !ok {
+		t.Fatalf("unexpected session cookie value: %q", cookie.Value)
+	}
+	tampered := *cookie
+	tampered.Value = "second." + signature
+
+	req := httptest.NewRequest(http.MethodGet, "/api/items", nil)
+	req.AddCookie(&tampered)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected tampered cookie to be rejected, got %d", rec.Code)
+	}
+}
+
+func TestMalformedSessionCookieIsRejected(t *testing.T) {
+	itemStore, err := store.NewFileStore(t.TempDir(), 1<<20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	app := New(config.Config{
+		Users:          []config.User{{ID: "main", Token: "main-token"}},
+		StaticDir:      "static",
+		MaxUploadBytes: 1 << 20,
+	}, itemStore)
+	handler := app.Handler()
+
+	for _, value := range []string{"", "main", ".signature", "main.", "main.signature.extra"} {
+		t.Run(value, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, "/api/items", nil)
+			req.AddCookie(&http.Cookie{Name: "unishare_session", Value: value})
+			rec := httptest.NewRecorder()
+			handler.ServeHTTP(rec, req)
+			if rec.Code != http.StatusUnauthorized {
+				t.Fatalf("expected malformed cookie %q to be rejected, got %d", value, rec.Code)
+			}
+		})
 	}
 }
 
